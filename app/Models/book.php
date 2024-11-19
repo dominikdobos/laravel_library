@@ -9,9 +9,16 @@ class book extends Model
 {
     use HasFactory;
 
+    // új elsődleges kulcs
+    protected $primaryKey = 'book_id';
+
     protected $fillable = [
         'author',
         'title',
         'pieces',
     ];
+
+    public function copies() {
+        return $this->hasMany(copy::class, 'book_id', 'book_id');
+    }
 }

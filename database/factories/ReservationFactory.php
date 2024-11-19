@@ -7,9 +7,9 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Copy>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Reservation>
  */
-class CopyFactory extends Factory
+class ReservationFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -19,10 +19,10 @@ class CopyFactory extends Factory
     public function definition(): array
     {
         return [
+            'user_id' => User::all()->random()->id,
             'book_id' => book::all()->random()->book_id,
-            'hardcovered' => rand(0,2),
-            'publication' => rand(1950, 2024),
-            'status' => rand(0,1)
+            'start' => fake()->date(),
+            'message' => rand(0,1)
         ];
     }
 }

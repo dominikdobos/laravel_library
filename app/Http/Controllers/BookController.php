@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\copy;
+use App\Models\book;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
-class CopyController extends Controller
+class BookController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return copy::all();
+        return book::all();
     }
 
     /**
@@ -21,7 +21,7 @@ class CopyController extends Controller
      */
     public function store(Request $request)
     {
-        $record = new copy();
+        $record = new book();
         $record->fill($request->all());
         $record->save();
     }
@@ -31,7 +31,7 @@ class CopyController extends Controller
      */
     public function show(string $id)
     {
-        return copy::find($id);
+        return book::find($id);
     }
 
     /**
@@ -39,7 +39,7 @@ class CopyController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $record = copy::find($id);
+        $record = book::find($id);
         $record->fill($request->all());
         $record->save();
     }
@@ -49,18 +49,16 @@ class CopyController extends Controller
      */
     public function destroy(string $id)
     {
-        copy::find($id)->delete();
+        book::find($id)->delete();
     }
 
+    // saját
 
-    // Bizonyos évben kiadott példányok névvel és címmel kiíratása.
-    public function booksWithYear($year) {
-        $books = DB::table('copies as c')
-        ->join('books as b', 'c.book_id', 'b.book_id')
-        ->selectRaw('author, title')
-        ->where('publication', $year)
-        ->get();
+    public function booksWithCopies() {
+        $user = Auth::user();	//bejelentkezett felhasználó
+        return  book::with('copies')->
+        where('user_id','=',$user->id)->
+        get();
 
-        return $books;
     }
 }

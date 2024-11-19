@@ -13,23 +13,27 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('copies', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->references('id')->on('users');
-            $table->foreignId('book_id')->references('id')->on('books');
+            $table->id('copy_id');
+            $table->foreignId('book_id')->references('book_id')->on('books');
+            //0 puha; 1 kemány
+            $table->boolean('hardcovered')->default(1);
+            $table->year('publication')->default('2020');
+            //0=könyvtár; 1=kikölcsönözve; 2=sselejt
+            $table->smallInteger('status')->default(0);
             $table->timestamps();
         });
 
         copy::create([
-            'user_id' => 1, 
-            'book_id' => 1, 
+            'book_id' => 1,
+            'publication'=>'2000',
         ]);
         copy::create([
-            'user_id' => 2, 
             'book_id' => 2, 
+            'publication'=>'2021',
         ]);
         copy::create([
-            'user_id' => 3, 
             'book_id' => 3, 
+            'publication'=>'2010',
         ]);
 
     }

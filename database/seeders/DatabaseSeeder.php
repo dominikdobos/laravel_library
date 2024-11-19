@@ -4,6 +4,8 @@ namespace Database\Seeders;
 
 use App\Models\book;
 use App\Models\copy;
+use App\Models\Lending;
+use App\Models\Reservation;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -21,9 +23,8 @@ class DatabaseSeeder extends Seeder
 
         copy::factory(10)->create();
 
-        /* User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]); */
+        Lending::factory(10)->create();
+        
+        Reservation::factory(5)->create();
     }
 }
