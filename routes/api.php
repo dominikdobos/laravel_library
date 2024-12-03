@@ -17,8 +17,8 @@ use Illuminate\Support\Facades\Route;
 
 
 //bárki által elérhető
-Route::post('/register',[RegisteredUserController::class, 'store']);
-Route::post('/login',[AuthenticatedSessionController::class, 'store']);
+Route::post('/register', [RegisteredUserController::class, 'store']);
+Route::post('/login', [AuthenticatedSessionController::class, 'store']);
 
 Route::get('/book-year/{year}', [CopyController::class, 'booksWithYear']);
 
@@ -28,73 +28,75 @@ Route::patch('update-password/{id}', [UserController::class, 'updatePassword']);
 
 // autentikált útvonal
 Route::middleware(['auth:sanctum'])
-->group(function () {
-    Route::get('/auth-user', [UserController::class, 'show']);
-    Route::patch('/auth-user', [UserController::class, 'update']);
-    Route::get('lending-copies', [LendingController::class, 'lendingsWithCopies']);
+    ->group(function () {
+        Route::get('/auth-user', [UserController::class, 'show']);
+        Route::patch('/auth-user', [UserController::class, 'update']);
+        Route::get('lending-copies', [LendingController::class, 'lendingsWithCopies']);
 
-    //hány kölcsönzése volt idáig a bej. felh.nak
-    Route::get('/lendings-count', [LendingController::class, 'lendingCount']);
+        //hány kölcsönzése volt idáig a bej. felh.nak
+        Route::get('/lendings-count', [LendingController::class, 'lendingCount']);
 
-    //hány aktív kölcsönzése van
-    Route::get('/active-lendings-count', [LendingController::class, 'activeLendingCount']);
-    
-    //hány könyvet kölcsöntt idáig
-    Route::get('/lending-books-count', [LendingController::class, 'lendingBooksCount']);
+        //hány aktív kölcsönzése van
+        Route::get('/active-lendings-count', [LendingController::class, 'activeLendingCount']);
 
-    //a kikölcsönzött könyvek adatai
-    Route::get('/lending-books-data', [LendingController::class, 'lendingBooksData']);
+        //hány könyvet kölcsöntt idáig
+        Route::get('/lending-books-count', [LendingController::class, 'lendingBooksCount']);
 
-    //könyvenként csoportosítsd, csak azokat, amik max 1 példányban van nálam!
-    Route::get('/lending-max-one', [LendingController::class, 'lendingGroupMaxOne']);
+        //a kikölcsönzött könyvek adatai
+        Route::get('/lending-books-data', [LendingController::class, 'lendingBooksData']);
 
-    // Kijelentkezés útvonal
-    Route::post('/logout', [AuthenticatedSessionController::class, 'destroy']);
+        //könyvenként csoportosítsd, csak azokat, amik max 1 példányban van nálam!
+        Route::get('/lending-max-one', [LendingController::class, 'lendingGroupMaxOne']);
 
-
-    Route::get('/reserved-books', [ReservationController::class, 'reservedBooks']);
-    
-    
-    Route::get('/reservations-users', [ReservationController::class, 'reservationsWithUsers']);
+        // Kijelentkezés útvonal
+        Route::post('/logout', [AuthenticatedSessionController::class, 'destroy']);
 
 
-    Route::get('/reservation-count', [ReservationController::class, 'reservationCount']);
+        Route::get('/reserved-books', [ReservationController::class, 'reservedBooks']);
 
-    Route::get('/reservation-in-weeks/{weeks}', [LendingController::class, 'reservationsMoreThanXWeeks']);
-});
+
+        Route::get('/reservations-users', [ReservationController::class, 'reservationsWithUsers']);
+
+
+        Route::get('/reservation-count', [ReservationController::class, 'reservationCount']);
+
+        Route::get('/reservation-in-weeks/{weeks}', [LendingController::class, 'reservationsMoreThanXWeeks']);
+
+        Route::patch('/bring-back/{copy_id}/{start}', [LendingController::class, 'bringBack']);
+        Route::patch('/bring-back2/{copy_id}/{start}', [LendingController::class, 'bringBack']);
+    });
 
 
 // admin útvonal
-Route::middleware(['auth:sanctum',Admin::class])
-->group(function () {
-    // összes útvonal
-    Route::get('lending-copies', [LendingController::class, 'lendingsWithCopies']);
+Route::middleware(['auth:sanctum', Admin::class])
+    ->group(function () {
+        // összes útvonal
+        Route::get('lending-copies', [LendingController::class, 'lendingsWithCopies']);
 
-    Route::apiResource('/admin/users', UserController::class);
-    Route::get('/specific-date', [LendingController::class, 'lendingsWithUsers']);  
-    Route::get('/copy-specific/{id}', [LendingController::class, 'copySpecific']);  
-
-});
+        Route::apiResource('/admin/users', UserController::class);
+        Route::get('/specific-date', [LendingController::class, 'lendingsWithUsers']);
+        Route::get('/copy-specific/{id}', [LendingController::class, 'copySpecific']);
+    });
 
 
 // Librarian útvonal
-Route::middleware(['auth:sanctum',Librarian::class])
-->group(function () {
-    //útvonalak
-    Route::get('/librarian/book-copies', [BookController::class, 'booksWithCopies']);
-    // Route::apiResource('/librarian/reservations', ReservationController::class);    
-    Route::get('/librarian/reservations', [ReservationController::class, 'index']);    
-    Route::get('/librarian/reservations/{user_id}/{book_id}/{start}', [ReservationController::class, 'show']);    
-    Route::patch('/librarian/reservations/{user_id}/{book_id}/{start}', [ReservationController::class, 'update']);    
-});
+Route::middleware(['auth:sanctum', Librarian::class])
+    ->group(function () {
+        //útvonalak
+        Route::get('/librarian/book-copies', [BookController::class, 'booksWithCopies']);
+        // Route::apiResource('/librarian/reservations', ReservationController::class);    
+        Route::get('/librarian/reservations', [ReservationController::class, 'index']);
+        Route::get('/librarian/reservations/{user_id}/{book_id}/{start}', [ReservationController::class, 'show']);
+        Route::patch('/librarian/reservations/{user_id}/{book_id}/{start}', [ReservationController::class, 'update']);
+        Route::post('/librarian/store-lending', [LendingController::class, 'store']);
+    });
 
 
 // Warehouseman útvonal
-Route::middleware(['auth:sanctum',Warehouseman::class])
-->group(function () {
-    //útvonalak
-});
+Route::middleware(['auth:sanctum', Warehouseman::class])
+    ->group(function () {
+        //útvonalak
+    });
 
 Route::get('book-copies', [BookController::class, 'booksWithCopies']);
 //Route::get('lending-copies', [LendingController::class, 'lendingsWithCopies']);
-
